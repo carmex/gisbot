@@ -1,4 +1,4 @@
-import { Context, Effect, Layer, pipe } from "effect";
+import { Context, Effect, Layer, pipe, Redacted } from "effect";
 import * as querystring from "node:querystring";
 import { Config } from "../config";
 
@@ -35,7 +35,9 @@ export const GISerLive = Layer.effect(
   GISer,
   Effect.gen(function* () {
     const config = yield* Config;
-    const { googleApiKey: key, googleCx: cx } = yield* config.getConfig;
+    const { googleApiKey, googleCx } = yield* config.getConfig;
+    const key = Redacted.value(googleApiKey);
+    const cx = Redacted.value(googleCx);
 
     return GISer.of({
       gis: query =>
