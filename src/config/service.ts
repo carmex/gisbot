@@ -13,10 +13,13 @@ const portConf = pipe(
 
 const tokensConf = C.hashSet(C.string(), "WEBHOOK_TOKENS").pipe(C.withDefault(HashSet.empty<string>()));
 
+const googleApiKeyConf = C.string("GOOGLE_API_KEY");
+const googleCxConf = C.string("GOOGLE_SEARCH_ENGINE_ID");
+
 const createConfig = (): C.Config<AppConfig> =>
   pipe(
-    C.all([portConf, tokensConf]),
-    C.map(([port, validTokens]) => ({ port, validTokens })),
+    C.all([portConf, tokensConf, googleApiKeyConf, googleCxConf]),
+    C.map(([port, validTokens, googleApiKey, googleCx]) => ({ port, validTokens, googleApiKey, googleCx })),
   );
 
 export class Config extends Context.Tag("Config")<Config, Readonly<{ getConfig: Effect.Effect<AppConfig> }>>() {}
