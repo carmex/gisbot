@@ -23,24 +23,20 @@ export type GISerFuncs = Readonly<{
 
 export class GISer extends Context.Tag("GISer")<GISer, GISerFuncs>() {}
 
-const BaseUrl = "https://images.google.com/search";
-const UserAgent =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36";
+const BaseUrl = "https://www.google.com/search";
+const UserAgent = "AdsBot-Google (+http://www.google.com/adsbot.html)";
 
-const ImageFileExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg"];
 const FilterDomains = ["gstatic.com"].map(domain => ` -site:${domain}`).join(" ");
 
 const ImageURLRegex = /\["(http.+?)",(\d+),(\d+)]/g;
 
 type ImageResult = Readonly<{ url: string; width: number; height: number }>;
 
-const parseImages = (dom: JSDOM): readonly ImageResult[] => {
+export const parseImages = (dom: JSDOM): readonly ImageResult[] => {
   const scripts = Array.from(dom.window.document.querySelectorAll("script"));
-  const containsExtensions = scripts
-    .filter(s => ImageFileExtensions.some(ext => s.innerHTML.includes(ext)))
-    .map(s => s.innerHTML);
+  const scriptsContent = scripts.map(s => s.innerHTML);
 
-  return containsExtensions.flatMap(script =>
+  return scriptsContent.flatMap(script =>
     Array.from(script.matchAll(ImageURLRegex)).reduce((acc, result) => {
       if (result.length <= 3) return acc;
       else {
